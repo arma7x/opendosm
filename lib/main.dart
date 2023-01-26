@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:opendosm/modules/PriceCatcher/api.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,7 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'OpenDOSM',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'OpenDOSM'),
     );
   }
 }
@@ -50,7 +51,15 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
-  void _incrementCounter() {
+  void _incrementCounter() async {
+    var d = await Api.GetData();
+    print(d["priceCatcher"]![0]!["href"]);
+    var e = await Api.ExtractData(d["priceCatcher"]![0]!["href"]);
+    print(e);
+    var f = await Api.ExtractData(d["itemLookup"]!["href"]);
+    print(f);
+    var g = await Api.ExtractData(d["premiseLookup"]!["href"]);
+    print(g);
     setState(() {
       // This call to setState tells the Flutter framework that something has
       // changed in this State, which causes it to rerun the build method below
