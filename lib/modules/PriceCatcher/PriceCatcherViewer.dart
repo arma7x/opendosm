@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import './api.dart';
 
 class PriceCatcherViewer extends StatefulWidget {
@@ -331,15 +332,23 @@ class _PriceCatcherViewerState extends State<PriceCatcherViewer> {
           ),
         )
       ),
-      body: ListView.builder(
+      body: ListView.separated(
+        separatorBuilder: (context, index) {
+          return Divider(
+            thickness: 1.0,
+            color: Colors.grey,
+          );
+        },
         itemCount: filteredProducts.length,
         itemBuilder: (BuildContext _, int index) {
           int item_code = filteredProducts[index]["item_code"]!.toInt();
+          int premise_code = filteredProducts[index]["premise_code"]!.toInt();
           String name = "ITEM LOOKUP: Missing, id ${item_code.toString()}";
           String price = "RM ??";
           String unit = "??";
           String item_group = "??";
           String item_category = "??";
+          String address = "??";
           if (widget.itemLookup.containsKey(item_code) == true) {
             if (widget.itemLookup[item_code].containsKey("item")) {
               name = widget.itemLookup[item_code]["item"];
@@ -371,20 +380,57 @@ class _PriceCatcherViewerState extends State<PriceCatcherViewer> {
               price = "RM -";
             }
           }
-          return ListTile(
-            leading: const Icon(Icons.list),
-            trailing: Text(
-              price,
-              style: TextStyle(color: Colors.blue, fontSize: 15),
+          if (widget.premiseLookup.containsKey(premise_code) == true) {
+            address = widget.premiseLookup[premise_code]["address"]!;
+          }
+          return Slidable(
+            startActionPane: ActionPane(
+              motion: ScrollMotion(),
+              children: [
+                Container (
+                  padding: const EdgeInsets.all(2.0),
+                  width: MediaQuery.of(context).size.width*0.5,
+                  child: Text(
+                    address,
+                    style: TextStyle(fontSize: 12)
+                  )
+                )
+              ],
             ),
-            title: Text(name),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text("Unit: ${unit}"),
-                Text("Kumpulan: ${item_group}"),
-                Text("Kategori: ${item_category}"),
-              ]
+            endActionPane: ActionPane(
+              motion: ScrollMotion(),
+              children: [
+                Container (
+                  padding: const EdgeInsets.all(2.0),
+                  width: MediaQuery.of(context).size.width*0.5,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        "Unit: ${unit}",
+                        style: TextStyle(fontSize: 12)
+                      ),
+                      Text(
+                        "Kumpulan: ${item_group}",
+                        style: TextStyle(fontSize: 12)
+                      ),
+                      Text(
+                        "Kategori: ${item_category}",
+                        style: TextStyle(fontSize: 12)
+                      ),
+                    ]
+                  )
+                )
+              ],
+            ),
+            child: ListTile(
+              leading: const Icon(Icons.list),
+              trailing: Text(
+                price,
+                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue, fontSize: 15),
+              ),
+              title: Text(name),
             ),
           );
         }

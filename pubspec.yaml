@@ -39,6 +39,7 @@ dependencies:
   http: ^0.13.5
   html: ^0.15.1
   csv: ^5.0.1
+  flutter_slidable: ^2.0.0
 
 dev_dependencies:
   flutter_test:
