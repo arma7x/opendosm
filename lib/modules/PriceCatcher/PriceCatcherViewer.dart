@@ -42,8 +42,25 @@ class _PriceCatcherViewerState extends State<PriceCatcherViewer> {
   String premiseLookupDistrict = "";
   String premiseLookupPremiseType = "";
 
+  void _loadingDialog(bool show) {
+    if (show == true) {
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext _) {
+          return AlertDialog(
+            content: Container(child: new LinearProgressIndicator()),
+          );
+        },
+      );
+    } else {
+      Navigator.of(context).pop();
+    }
+  }
+
   _fetchData() async {
     try {
+      _loadingDialog(true);
       List<Map<String, dynamic>> _products = [];
       var tempProducts = await Api.ScrapDataset(widget.href);
       tempProducts["table"]!["data"]!.forEach((_product) {
@@ -54,8 +71,10 @@ class _PriceCatcherViewerState extends State<PriceCatcherViewer> {
         products = _products;
         filteredProducts = _products;
       });
+      _loadingDialog(false);
     } catch (err) {
       print(err);
+      _loadingDialog(false);
     }
   }
 
@@ -126,6 +145,9 @@ class _PriceCatcherViewerState extends State<PriceCatcherViewer> {
       if (_filteredProducts.length == 0) {
         final snackBar = SnackBar(content: Text("Tiada barang sepadan dengan carian anda"));
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        setState(() {
+          filteredProducts = [];
+        });
       } else {
         setState(() {
           filteredProducts = _filteredProducts;
@@ -332,7 +354,7 @@ class _PriceCatcherViewerState extends State<PriceCatcherViewer> {
           ),
         )
       ),
-      body: ListView.separated(
+      body: filteredProducts.length > 0 ? ListView.separated(
         separatorBuilder: (context, index) {
           return Divider(
             thickness: 1.0,
@@ -434,6 +456,16 @@ class _PriceCatcherViewerState extends State<PriceCatcherViewer> {
             ),
           );
         }
+      ) : Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const Text(
+              "Data not available",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+          ],
+        ),
       ),
     );
   }
