@@ -30,6 +30,8 @@ class PriceCatcherViewer extends StatefulWidget {
 
 class _PriceCatcherViewerState extends State<PriceCatcherViewer> {
 
+  Api api = new Api();
+
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
 
   List<Map<String, dynamic>> products = [];
@@ -62,7 +64,7 @@ class _PriceCatcherViewerState extends State<PriceCatcherViewer> {
     try {
       _loadingDialog(true);
       List<Map<String, dynamic>> _products = [];
-      var tempProducts = await Api.ScrapDataset(widget.href);
+      var tempProducts = await api.ScrapDataset(widget.href);
       tempProducts["table"]!["data"]!.forEach((_product) {
         final Map<String, dynamic> product = Map.from(_product);
         _products.add(product);

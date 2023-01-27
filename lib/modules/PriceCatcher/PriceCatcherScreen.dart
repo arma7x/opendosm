@@ -13,6 +13,8 @@ class PriceCatcherScreen extends StatefulWidget {
 
 class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
 
+  Api api = new Api();
+
   List<Map<String, String>> priceCatcher = [];
 
   Map<int, dynamic> itemLookup = {};
@@ -50,7 +52,7 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
       Map<int, dynamic> _itemLookup = {};
       Map<String, List<int>> _itemLookupGroupIndex = {};
       Map<String, List<int>> _itemLookupCategoryIndex = {};
-      var tempItemLookup = await Api.LookupCSV("https://storage.googleapis.com/dosm-public-pricecatcher/lookup_item.csv");
+      var tempItemLookup = await api.LookupCSV("https://storage.googleapis.com/dosm-public-pricecatcher/lookup_item.csv");
       tempItemLookup.forEach((_item) {
         final Map<String, dynamic> item = Map.from(_item);
         final int item_code = item["item_code"]!.toInt();
@@ -71,7 +73,7 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
 
       Map<int, dynamic> _premiseLookup = {};
       Map<String, Map<String, Map<String, List<int>>>> _premiseLookupIndex = {};
-      var tempPremiseLookup = await Api.LookupCSV("https://storage.googleapis.com/dosm-public-pricecatcher/lookup_premise.csv");
+      var tempPremiseLookup = await api.LookupCSV("https://storage.googleapis.com/dosm-public-pricecatcher/lookup_premise.csv");
       tempPremiseLookup.forEach((_premise) {
         final Map<String, dynamic> premise = Map.from(_premise);
         final int premise_code = premise["premise_code"]!.toInt();
