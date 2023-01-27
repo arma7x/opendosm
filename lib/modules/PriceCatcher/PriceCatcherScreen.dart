@@ -41,15 +41,17 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
   _fetchData() async {
     try {
       _loadingDialog(true);
-      var d = await Api.GetData();
+
+      var _priceCatcher = await Api.GetPriceCatcherList();
       setState(() {
-        priceCatcher = d["priceCatcher"];
+        priceCatcher = _priceCatcher;
       });
+
       Map<int, dynamic> _itemLookup = {};
       Map<String, List<int>> _itemLookupGroupIndex = {};
       Map<String, List<int>> _itemLookupCategoryIndex = {};
-      var tempItemLookup = await Api.ExtractData(d["itemLookup"]!["href"]);
-      tempItemLookup["table"]!["data"]!.forEach((_item) {
+      var tempItemLookup = await Api.LookupCSV("https://storage.googleapis.com/dosm-public-pricecatcher/lookup_item.csv");
+      tempItemLookup.forEach((_item) {
         final Map<String, dynamic> item = Map.from(_item);
         final int item_code = item["item_code"]!.toInt();
         if (item_code >= 1) {
@@ -69,8 +71,8 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
 
       Map<int, dynamic> _premiseLookup = {};
       Map<String, Map<String, Map<String, List<int>>>> _premiseLookupIndex = {};
-      var tempPremiseLookup = await Api.ExtractData(d["premiseLookup"]!["href"]);
-      tempPremiseLookup["table"]!["data"]!.forEach((_premise) {
+      var tempPremiseLookup = await Api.LookupCSV("https://storage.googleapis.com/dosm-public-pricecatcher/lookup_premise.csv");
+      tempPremiseLookup.forEach((_premise) {
         final Map<String, dynamic> premise = Map.from(_premise);
         final int premise_code = premise["premise_code"]!.toInt();
         if (premise_code >= 1) {

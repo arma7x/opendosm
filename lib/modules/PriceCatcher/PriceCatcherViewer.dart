@@ -44,7 +44,7 @@ class _PriceCatcherViewerState extends State<PriceCatcherViewer> {
   _fetchData() async {
     try {
       List<Map<String, dynamic>> _products = [];
-      var tempProducts = await Api.ExtractData(widget.href);
+      var tempProducts = await Api.ScrapDataset(widget.href);
       tempProducts["table"]!["data"]!.forEach((_product) {
         final Map<String, dynamic> product = Map.from(_product);
         _products.add(product);
@@ -331,26 +331,63 @@ class _PriceCatcherViewerState extends State<PriceCatcherViewer> {
           ),
         )
       ),
-      body: ListView(
-        children: <Widget>[
-          Card(
-            color: Colors.grey[200],
-            child: Container(
-              child: ListTile(
-                leading: Icon(
-                  Icons.price_change,
-                  size: 28.0,
-                ),
-                trailing: const Icon(Icons.arrow_forward_ios ),
-                title: Text(
-                  widget.href,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                ),
-                onTap: () {}
-              )
-            )
-          ),
-        ],
+      body: ListView.builder(
+        itemCount: filteredProducts.length,
+        itemBuilder: (BuildContext _, int index) {
+          int item_code = filteredProducts[index]["item_code"]!.toInt();
+          String name = "ITEM LOOKUP: Missing, id ${item_code.toString()}";
+          String price = "RM ??";
+          String unit = "??";
+          String item_group = "??";
+          String item_category = "??";
+          if (widget.itemLookup.containsKey(item_code) == true) {
+            if (widget.itemLookup[item_code].containsKey("item")) {
+              name = widget.itemLookup[item_code]["item"];
+            } else {
+              name = "ITEM LOOKUP: Exist but no `item`";
+            }
+
+            if (widget.itemLookup[item_code].containsKey("unit")) {
+              unit = widget.itemLookup[item_code]["unit"].toString();
+            } else {
+              unit = "Tiada";
+            }
+
+            if (widget.itemLookup[item_code].containsKey("item_group")) {
+              item_group = widget.itemLookup[item_code]["item_group"];
+            } else {
+              item_group = "Tiada";
+            }
+
+            if (widget.itemLookup[item_code].containsKey("item_category")) {
+              item_category = widget.itemLookup[item_code]["item_category"];
+            } else {
+              item_category = "Tiada";
+            }
+
+            if (filteredProducts[index].containsKey("price") == true) {
+              price = "RM ${filteredProducts[index]['price'].toStringAsFixed(2)}";
+            } else {
+              price = "RM -";
+            }
+          }
+          return ListTile(
+            leading: const Icon(Icons.list),
+            trailing: Text(
+              price,
+              style: TextStyle(color: Colors.blue, fontSize: 15),
+            ),
+            title: Text(name),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text("Unit: ${unit}"),
+                Text("Kumpulan: ${item_group}"),
+                Text("Kategori: ${item_category}"),
+              ]
+            ),
+          );
+        }
       ),
     );
   }

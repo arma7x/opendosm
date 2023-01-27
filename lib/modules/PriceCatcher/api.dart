@@ -3,10 +3,35 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' show parse;
 import 'package:html/dom.dart' as DOM;
+import 'package:csv/csv.dart';
 
 class Api {
 
-  static Future<Map<String, dynamic>> GetData() async {
+  static Future<List<Map<String, dynamic>>> LookupCSV(String url) async {
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        List<Map<String, dynamic>> result = [];
+        final lines = const CsvToListConverter().convert(response.body.toString());
+        for (var i=1;i<lines.length;i++) {
+          Map<String, dynamic> temp = {};
+          if (int.parse(lines[i][0].toString()) > -1) {
+            lines[0].asMap().forEach((index, h) {
+              temp[h] = lines[i][index];
+            });
+            result.add(temp);
+          }
+        }
+        return Future<List<Map<String, dynamic>>>.value(result);
+      } else {
+        throw('Unknown error');
+      }
+    } on Exception catch (e) {
+      rethrow;
+    }
+  }
+
+  static Future<List<Map<String, String>>> GetPriceCatcherList() async {
     try {
       final response = await http.get(Uri.parse("https://open.dosm.gov.my/data-catalogue"));
       if (response.statusCode == 200) {
@@ -19,20 +44,14 @@ class Api {
             break;
           }
         }
-        Map<String, String> itemLookup = {};
-        Map<String, String> premiseLookup = {};
         List<Map<String, String>> priceCatcher = [];
         ul = ul.reversed.toList();
         ul.forEach((li) {
           if (li.children[0].text.indexOf("PriceCatcher") > -1) {
             priceCatcher.add({ "name": li.children[0].text, "href": "https://open.dosm.gov.my${li.children[0].attributes['href']!}" });
-          } else if (li.children[0].text.indexOf("Item Lookup") > -1) {
-            itemLookup = { "name": li.children[0].text, "href": "https://open.dosm.gov.my${li.children[0].attributes['href']!}" };
-          } else if (li.children[0].text.indexOf("Premise Lookup") > -1) {
-            premiseLookup = { "name": li.children[0].text, "href": "https://open.dosm.gov.my${li.children[0].attributes['href']!}" };
           }
         });
-        return Future<Map<String, dynamic>>.value({ "priceCatcher": priceCatcher, "itemLookup": itemLookup, "premiseLookup": premiseLookup });
+        return Future<List<Map<String, String>>>.value(priceCatcher);
       } else {
         throw('Unknown error');
       }
@@ -41,7 +60,7 @@ class Api {
     }
   }
 
-  static Future<Map<String, dynamic>> ExtractData(String href) async {
+  static Future<Map<String, dynamic>> ScrapDataset(String href) async {
     try {
       final response = await http.get(Uri.parse(href));
       if (response.statusCode == 200) {
