@@ -45,6 +45,7 @@ dependencies:
   idb_shim: ^2.3.0+1
   path_provider: ^2.0.12
   permission_handler: ^10.2.0
+  shared_preferences: ^0.5.5
 
 dev_dependencies:
   flutter_test:
