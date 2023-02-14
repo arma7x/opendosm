@@ -41,7 +41,6 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
   }
 
   _fetchData() async {
-    await Api.GetDatabaseWeb();
     try {
       _loadingDialog(true);
 
