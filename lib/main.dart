@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:opendosm/modules/screens.dart';
+import 'package:opendosm_pricecatcher/modules/screens.dart';
 
 void main() {
   runApp(const MyApp());

@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.arma7x" "\0"
-            VALUE "FileDescription", "opendosm" "\0"
+            VALUE "FileDescription", "opendosm_pricecatcher" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "opendosm" "\0"
+            VALUE "InternalName", "opendosm_pricecatcher" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2023 com.arma7x. All rights reserved." "\0"
-            VALUE "OriginalFilename", "opendosm.exe" "\0"
-            VALUE "ProductName", "opendosm" "\0"
+            VALUE "OriginalFilename", "opendosm_pricecatcher.exe" "\0"
+            VALUE "ProductName", "opendosm_pricecatcher" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

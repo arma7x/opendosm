@@ -139,6 +139,11 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_web_plugins:
+    dependency: transitive
+    description: flutter
+    source: sdk
+    version: "0.0.0"
   html:
     dependency: "direct main"
     description:
@@ -351,10 +356,10 @@ packages:
     dependency: "direct main"
     description:
       name: shared_preferences
-      sha256: "9fe51dc8155892fb4d218d69b5a09e6c7bb4bddf0d55e9b2fb4daa510c39a309"
+      sha256: "08d8df06bf32ab574b6dee0b09f6df7e37a04022b5660492c3993efc38b46d97"
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.5"
+    version: "0.5.7+3"
   shared_preferences_macos:
     dependency: transitive
     description:
@@ -371,6 +376,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.4"
+  shared_preferences_web:
+    dependency: transitive
+    description:
+      name: shared_preferences_web
+      sha256: "345b8f659aa4aedaabc3665a63f563c62b08dc209dd23304bc155d69ebcd388d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.2+7"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -473,5 +486,5 @@ packages:
     source: hosted
     version: "1.0.0"
 sdks:
-  dart: ">=2.18.6 <3.0.0"
+  dart: ">=2.19.2 <3.0.0"
   flutter: ">=3.0.0"

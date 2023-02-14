@@ -1,4 +1,4 @@
-package com.arma7x.opendosm
+package com.arma7x.opendosm_pricecatcher
 
 import io.flutter.embedding.android.FlutterActivity
 
