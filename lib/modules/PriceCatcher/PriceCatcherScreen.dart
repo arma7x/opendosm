@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
-import './PriceCatcherViewer.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import './api.dart';
+import 'package:sqlite3/common.dart';
 
 class PriceCatcherScreen extends StatefulWidget {
-  const PriceCatcherScreen({super.key, required this.title});
+  const PriceCatcherScreen({
+    super.key,
+    required this.title,
+  });
 
   final String title;
 
@@ -15,14 +19,22 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
 
   Api api = new Api();
 
-  List<Map<String, String>> priceCatcher = [];
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
+  final ScrollController _scrollController = ScrollController();
 
-  Map<int, dynamic> itemLookup = {};
-  Map<String, List<int>> itemLookupGroupIndex = {};
-  Map<String, List<int>> itemLookupCategoryIndex = {};
+  List<Map<String, dynamic>> items = [];
+  List<String> itemGroups = [];
+  List<String> itemCategories = [];
+  Map<String, Map<String, List<String>>> states = {};
 
-  Map<int, dynamic> premiseLookup = {};
-  Map<String, Map<String, Map<String, List<int>>>> premiseLookupIndex = {};
+  String itemLookupGroup = "";
+  String itemLookupCategory = "";
+
+  String premiseLookupState = "";
+  String premiseLookupDistrict = "";
+  String premiseLookupPremiseType = "";
+
+  CommonDatabase? dBInstance;
 
   void _loadingDialog(bool show) {
     if (show == true) {
@@ -43,71 +55,75 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
   _fetchData() async {
     try {
       _loadingDialog(true);
-
-      var _priceCatcher = await Api.GetPriceCatcherList();
-      setState(() {
-        priceCatcher = _priceCatcher;
-      });
-
-      Map<int, dynamic> _itemLookup = {};
-      Map<String, List<int>> _itemLookupGroupIndex = {};
-      Map<String, List<int>> _itemLookupCategoryIndex = {};
-      var tempItemLookup = await api.LookupCSV("https://storage.googleapis.com/dosm-public-pricecatcher/lookup_item.csv");
-      tempItemLookup.forEach((_item) {
-        final Map<String, dynamic> item = Map.from(_item);
-        final int item_code = item["item_code"]!.toInt();
-        if (item_code >= 1) {
-          _itemLookup[item_code] = item;
-          final item_group = item["item_group"]!.toString();
-          if (_itemLookupGroupIndex.containsKey(item_group) == false) {
-            _itemLookupGroupIndex[item_group] = <int>[];
-          }
-          _itemLookupGroupIndex[item_group]!.add(item_code);
-          final item_category = item["item_category"]!.toString();
-          if (_itemLookupCategoryIndex.containsKey(item_category) == false) {
-            _itemLookupCategoryIndex[item_category] = <int>[];
-          }
-          _itemLookupCategoryIndex[item_category]!.add(item_code);
+      dBInstance = await Api.GetDatabaseWeb();
+      List<String> tempItemGroups = [];
+      var _itemGroups = dBInstance!.select('''
+        SELECT item_group FROM items
+        WHERE NOT item_group='UNKNOWN'
+        GROUP BY item_group;
+        '''
+      );
+      for (var x in _itemGroups.rows) {
+        tempItemGroups.add(x[0]!.toString());
+      }
+      List<String> tempItemCategories = [];
+      var _itemCategories = dBInstance!.select('''
+        SELECT item_category FROM items
+        WHERE NOT item_category='UNKNOWN'
+        GROUP BY item_category
+        '''
+      );
+      for (var x in _itemCategories.rows) {
+        tempItemCategories.add(x[0]!.toString());
+      }
+      Map<String, Map<String, List<String>>> tempStates = {};
+      var _states = dBInstance!.select('''
+        SELECT state, district, premise_type FROM premises
+        WHERE NOT state='UNKNOWN'
+        GROUP BY state, district, premise_type
+        ORDER BY state ASC, district ASC, premise_type ASC
+        '''
+      );
+      for (var x in _states.rows) {
+        final state = x[0]!.toString().trim();
+        final district = x[1]!.toString().trim();
+        final type = x[2]!.toString().trim();
+        if (tempStates.containsKey(state) == false) {
+          tempStates[state] = {};
         }
-      });
-
-      Map<int, dynamic> _premiseLookup = {};
-      Map<String, Map<String, Map<String, List<int>>>> _premiseLookupIndex = {};
-      var tempPremiseLookup = await api.LookupCSV("https://storage.googleapis.com/dosm-public-pricecatcher/lookup_premise.csv");
-      tempPremiseLookup.forEach((_premise) {
-        final Map<String, dynamic> premise = Map.from(_premise);
-        final int premise_code = premise["premise_code"]!.toInt();
-        if (premise_code >= 1) {
-          _premiseLookup[premise_code] = premise;
-          final state = premise["state"]!.toString();
-          if (_premiseLookupIndex.containsKey(state) == false) {
-            _premiseLookupIndex[state] = {};
-          }
-          final district = premise["district"]!.toString();
-          if (_premiseLookupIndex[state]!.containsKey(district) == false) {
-            _premiseLookupIndex[state]![district] = {};
-          }
-          final premise_type = premise["premise_type"]!.toString();
-          if (_premiseLookupIndex[state]![district]!.containsKey(premise_type) == false) {
-            _premiseLookupIndex[state]![district]![premise_type] = <int>[];
-          }
-          _premiseLookupIndex[state]![district]![premise_type]!.add(premise_code);
+        if (tempStates[state]!.containsKey(district) == false) {
+          tempStates[state]![district] = [];
         }
-      });
-
+        tempStates[state]![district]!.add(type);
+      }
       setState(() {
-        itemLookup = _itemLookup;
-        itemLookupGroupIndex = _itemLookupGroupIndex;
-        itemLookupCategoryIndex = _itemLookupCategoryIndex;
-        premiseLookup = _premiseLookup;
-        premiseLookupIndex = _premiseLookupIndex;
+        itemGroups = tempItemGroups;
+        itemCategories = tempItemCategories;
+        states = tempStates;
       });
-
       _loadingDialog(false);
+      _filterItems();
     } catch (err) {
-      print(err);
       _loadingDialog(false);
     }
+  }
+
+  _filterItems() {
+    if (dBInstance != null) {
+      var select_stmt = "SELECT * FROM items";
+      var where_stmt = ["WHERE NOT item_code=-1"];
+      if (itemLookupGroup != "") {
+        where_stmt.add(" item_group='${itemLookupGroup}'");
+      }
+      if (itemLookupCategory != "") {
+        where_stmt.add(" item_category='${itemLookupCategory}'");
+      }
+      var _items = dBInstance!.select([select_stmt, where_stmt.join(" AND")].join(' '));
+      setState(() {
+        items = _items.cast<Map<String, dynamic>>();
+      });
+    }
+    scaffoldKey.currentState!.closeEndDrawer();
   }
 
   @override
@@ -119,12 +135,223 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: scaffoldKey,
       appBar: AppBar(
         title: Text(widget.title),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.filter_alt_rounded),
+            tooltip: "Filter",
+            onPressed: () {
+              scaffoldKey.currentState!.openEndDrawer();
+            },
+          )
+        ]
       ),
-      body: priceCatcher.length == 0 ? Center(
+      endDrawerEnableOpenDragGesture: false,
+      endDrawer: Container(
+        width: MediaQuery.of(context).size.width * 0.90,
+        child: Drawer(
+          child: Column(
+            children: [
+              SizedBox(height: 10),
+              ListTile(
+                title: DropdownButton(
+                  isExpanded: true,
+                  value: itemLookupGroup,
+                  icon: const Icon(Icons.keyboard_arrow_down),
+                  items: <DropdownMenuItem<String>>[
+                    DropdownMenuItem(
+                      value: "",
+                      child: Text("Semua Kumpulan"),
+                    ),
+                    ...itemGroups.map((String group) {
+                      return DropdownMenuItem(
+                        value: group,
+                        child: Text(group),
+                      );
+                    }).toList()
+                  ],
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      itemLookupGroup = newValue!;
+                    });
+                  },
+                ),
+              ),
+              ListTile(
+                title: DropdownButton(
+                  isExpanded: true,
+                  value: itemLookupCategory,
+                  icon: const Icon(Icons.keyboard_arrow_down),
+                  items: <DropdownMenuItem<String>>[
+                    DropdownMenuItem(
+                      value: "",
+                      child: Text("Semua Kategori"),
+                    ),
+                    ...itemCategories.map((String category) {
+                      return DropdownMenuItem(
+                        value: category,
+                        child: Text(category),
+                      );
+                    }).toList()
+                  ],
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      itemLookupCategory = newValue!;
+                    });
+                  },
+                ),
+              ),
+              ListTile(
+                title: DropdownButton(
+                  isExpanded: true,
+                  value: premiseLookupState,
+                  icon: const Icon(Icons.keyboard_arrow_down),
+                  items: <DropdownMenuItem<String>>[
+                    DropdownMenuItem(
+                      value: "",
+                      child: Text("Semua Negeri"),
+                    ),
+                    ...states.keys.map((String state) {
+                      return DropdownMenuItem(
+                        value: state,
+                        child: Text(state),
+                      );
+                    }).toList()
+                  ],
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      premiseLookupState = newValue!;
+                    });
+                    premiseLookupDistrict = "";
+                    premiseLookupPremiseType = "";
+                  },
+                ),
+              ),
+              if (premiseLookupState != "") ListTile(
+                title: DropdownButton(
+                  isExpanded: true,
+                  value: premiseLookupDistrict,
+                  icon: const Icon(Icons.keyboard_arrow_down),
+                  items: <DropdownMenuItem<String>>[
+                    DropdownMenuItem(
+                      value: "",
+                      child: Text("Semua Daerah"),
+                    ),
+                    ...states[premiseLookupState]!.keys.map((String district) {
+                      return DropdownMenuItem(
+                        value: district,
+                        child: Text(district),
+                      );
+                    }).toList()
+                  ],
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      premiseLookupDistrict = newValue!;
+                    });
+                    premiseLookupPremiseType = "";
+                  },
+                ),
+              ),
+              if (premiseLookupDistrict != "") ListTile(
+                title: DropdownButton(
+                  isExpanded: true,
+                  value: premiseLookupPremiseType,
+                  icon: const Icon(Icons.keyboard_arrow_down),
+                  items: <DropdownMenuItem<String>>[
+                    DropdownMenuItem(
+                      value: "",
+                      child: Text("Semua Jenis Premis"),
+                    ),
+                    ...states[premiseLookupState]![premiseLookupDistrict]!.map((String type) {
+                      return DropdownMenuItem(
+                        value: type,
+                        child: Text(type),
+                      );
+                    }).toList()
+                  ],
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      premiseLookupPremiseType = newValue!;
+                    });
+                  },
+                ),
+              ),
+              MaterialButton(
+                minWidth: MediaQuery.of(context).size.width - 70,
+                height: 45,
+                color: Theme.of(context).colorScheme.primary,
+                child: new Text(
+                  "TAPIS CARIAN",
+                  style: new TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16.0,
+                    color: Colors.white
+                  )
+                ),
+                onPressed: () {
+                  if (items.length > 0){
+                    _scrollController.jumpTo(0);
+                  }
+                  _filterItems();
+                },
+              ),
+              MaterialButton(
+                minWidth: MediaQuery.of(context).size.width - 70,
+                height: 45,
+                color: Colors.red,
+                child: new Text(
+                  "RALAT CARIAN",
+                  style: new TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16.0,
+                    color: Colors.white
+                  )
+                ),
+                onPressed: () {
+                  if (items.length > 0){
+                    _scrollController.jumpTo(0);
+                  }
+                  itemLookupGroup = "";
+                  itemLookupCategory = "";
+                  premiseLookupState = "";
+                  premiseLookupDistrict = "";
+                  premiseLookupPremiseType = "";
+                  _filterItems();
+                },
+              )
+            ],
+          ),
+        )
+      ),
+      body: items.length > 0 ? ListView.separated(
+        controller: _scrollController,
+        separatorBuilder: (context, index) {
+          return Divider(
+            thickness: 1.0,
+            color: Colors.grey,
+          );
+        },
+        itemCount: items.length,
+        itemBuilder: (BuildContext _, int index) {
+          return ListTile(
+            leading: const Icon(Icons.list),
+            trailing: Text(
+              items[index]["unit"]!.toString(),
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue, fontSize: 15),
+            ),
+            title: Text(items[index]["item"]!.toString()),
+          );
+        }
+      ) : Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -134,35 +361,7 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
             ),
           ],
         ),
-      ) : ListView.builder(
-        itemCount: priceCatcher.length,
-        itemBuilder: (BuildContext _, int index) {
-          return Card(
-            color: Colors.grey[200],
-            child: Container(
-              child: ListTile(
-                trailing: const Icon(Icons.arrow_forward_ios),
-                title: Text(priceCatcher[index]["name"]!),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) {
-                      return PriceCatcherViewer(
-                        title: priceCatcher[index]["name"]!,
-                        href: priceCatcher[index]["href"]!,
-                        itemLookup: itemLookup,
-                        itemLookupGroupIndex: itemLookupGroupIndex,
-                        itemLookupCategoryIndex: itemLookupCategoryIndex,
-                        premiseLookup: premiseLookup,
-                        premiseLookupIndex: premiseLookupIndex,
-                      );
-                    }),
-                  );
-                }
-              )
-            )
-          );
-      }),
+      ),
     );
   }
 }
