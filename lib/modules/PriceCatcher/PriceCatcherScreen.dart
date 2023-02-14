@@ -154,6 +154,7 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
               padding: EdgeInsets.all(5.0),
               child: Wrap(
                 children: <Widget>[
+                  SizedBox(height: 4),
                   Center(
                     child: Text(
                       "Pilih Lokasi",
