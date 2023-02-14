@@ -420,7 +420,7 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
         itemCount: items.length,
         itemBuilder: (BuildContext _, int index) {
           return ListTile(
-            leading: const Icon(Icons.list),
+            leading: const Icon(Icons.search),
             trailing: Text(
               items[index]["unit"]!.toString(),
               style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue, fontSize: 13),
