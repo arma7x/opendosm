@@ -41,7 +41,7 @@ class Api with ApiHelper {
       int currentContentLength = await store.getObject("contentLength") as int ?? 0;
       await txn.completed;
 
-      if (zipUint8Array == null || latestContentLength > currentContentLength) {
+      if (zipUint8Array == null || latestContentLength != currentContentLength) {
         final response = await http.get(srcURI);
         if (response.statusCode == 200) {
           // String dir = (await getTemporaryDirectory()).path;
