@@ -17,7 +17,7 @@ import 'package:sqlite3/wasm.dart';
 
 class Api with ApiHelper {
 
-  static GetDatabaseWeb() async {
+  static Future<CommonDatabase> GetDatabaseWeb() async {
     int latestContentLength = 0;
     Uri srcURI = Uri.parse("https://raw.githubusercontent.com/arma7x/opendosm-parquet-to-sqlite/master/pricecatcher.zip");
     try {
@@ -69,16 +69,10 @@ class Api with ApiHelper {
         fs..createFile("/pricecatcher.db")..write("/pricecatcher.db", dbUint8List as Uint8List, 0);
       }
       final sqlite = await WasmSqlite3.load(response.bodyBytes, SqliteEnvironment(fileSystem: fs));
-      final dbSQL = await sqlite.open('/pricecatcher.db');
-      print(dbSQL.select('''
-        SELECT *
-        FROM items
-        LIMIT 2
-        '''
-      ));
+      final instance = await sqlite.open('/pricecatcher.db');
+      return Future<CommonDatabase>.value(instance);
     } on Exception catch (e) {
-      throw(e);
-      // rethrow;
+      rethrow;
     }
   }
 
