@@ -144,6 +144,142 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
     print(_priceList.cast<Map<String, dynamic>>().length);
   }
 
+  _showLocationFilter(BuildContext ctx, int item_code) {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return Container(
+              padding: EdgeInsets.all(5.0),
+              child: Wrap(
+                children: <Widget>[
+                  Center(
+                    child: Text(
+                      "Pilih Lokasi",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                    ),
+                  ),
+                  ListTile(
+                    title: DropdownButton(
+                      isExpanded: true,
+                      value: premiseLookupState,
+                      icon: const Icon(Icons.keyboard_arrow_down),
+                      items: <DropdownMenuItem<String>>[
+                        DropdownMenuItem(
+                          value: "",
+                          child: Text("Semua Negeri"),
+                        ),
+                        ...states.keys.map((String state) {
+                          return DropdownMenuItem(
+                            value: state,
+                            child: Text(state),
+                          );
+                        }).toList()
+                      ],
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          premiseLookupState = newValue!;
+                        });
+                        premiseLookupDistrict = "";
+                        premiseLookupPremiseType = "";
+                      },
+                    ),
+                  ),
+                  if (premiseLookupState != "") ListTile(
+                    title: DropdownButton(
+                      isExpanded: true,
+                      value: premiseLookupDistrict,
+                      icon: const Icon(Icons.keyboard_arrow_down),
+                      items: <DropdownMenuItem<String>>[
+                        DropdownMenuItem(
+                          value: "",
+                          child: Text("Semua Daerah"),
+                        ),
+                        ...states[premiseLookupState]!.keys.map((String district) {
+                          return DropdownMenuItem(
+                            value: district,
+                            child: Text(district),
+                          );
+                        }).toList()
+                      ],
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          premiseLookupDistrict = newValue!;
+                        });
+                        premiseLookupPremiseType = "";
+                      },
+                    ),
+                  ),
+                  if (premiseLookupDistrict != "") ListTile(
+                    title: DropdownButton(
+                      isExpanded: true,
+                      value: premiseLookupPremiseType,
+                      icon: const Icon(Icons.keyboard_arrow_down),
+                      items: <DropdownMenuItem<String>>[
+                        DropdownMenuItem(
+                          value: "",
+                          child: Text("Semua Jenis Premis"),
+                        ),
+                        ...states[premiseLookupState]![premiseLookupDistrict]!.map((String type) {
+                          return DropdownMenuItem(
+                            value: type,
+                            child: Text(type),
+                          );
+                        }).toList()
+                      ],
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          premiseLookupPremiseType = newValue!;
+                        });
+                      },
+                    ),
+                  ),
+                  MaterialButton(
+                    minWidth: MediaQuery.of(context).size.width,
+                    height: 45,
+                    color: Theme.of(context).colorScheme.primary,
+                    child: new Text(
+                      "CARIAN",
+                      style: new TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.0,
+                        color: Colors.white
+                      )
+                    ),
+                    onPressed: () {
+                      _getPriceList(item_code);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  MaterialButton(
+                    minWidth: MediaQuery.of(context).size.width,
+                    height: 45,
+                    color: Colors.red,
+                    child: new Text(
+                      "RALAT",
+                      style: new TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.0,
+                        color: Colors.white
+                      )
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        premiseLookupState = "";
+                        premiseLookupDistrict = "";
+                        premiseLookupPremiseType = "";
+                      });
+                    },
+                  )
+                ],
+              ),
+            );
+        });
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -228,81 +364,6 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
                   },
                 ),
               ),
-              ListTile(
-                title: DropdownButton(
-                  isExpanded: true,
-                  value: premiseLookupState,
-                  icon: const Icon(Icons.keyboard_arrow_down),
-                  items: <DropdownMenuItem<String>>[
-                    DropdownMenuItem(
-                      value: "",
-                      child: Text("Semua Negeri"),
-                    ),
-                    ...states.keys.map((String state) {
-                      return DropdownMenuItem(
-                        value: state,
-                        child: Text(state),
-                      );
-                    }).toList()
-                  ],
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      premiseLookupState = newValue!;
-                    });
-                    premiseLookupDistrict = "";
-                    premiseLookupPremiseType = "";
-                  },
-                ),
-              ),
-              if (premiseLookupState != "") ListTile(
-                title: DropdownButton(
-                  isExpanded: true,
-                  value: premiseLookupDistrict,
-                  icon: const Icon(Icons.keyboard_arrow_down),
-                  items: <DropdownMenuItem<String>>[
-                    DropdownMenuItem(
-                      value: "",
-                      child: Text("Semua Daerah"),
-                    ),
-                    ...states[premiseLookupState]!.keys.map((String district) {
-                      return DropdownMenuItem(
-                        value: district,
-                        child: Text(district),
-                      );
-                    }).toList()
-                  ],
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      premiseLookupDistrict = newValue!;
-                    });
-                    premiseLookupPremiseType = "";
-                  },
-                ),
-              ),
-              if (premiseLookupDistrict != "") ListTile(
-                title: DropdownButton(
-                  isExpanded: true,
-                  value: premiseLookupPremiseType,
-                  icon: const Icon(Icons.keyboard_arrow_down),
-                  items: <DropdownMenuItem<String>>[
-                    DropdownMenuItem(
-                      value: "",
-                      child: Text("Semua Jenis Premis"),
-                    ),
-                    ...states[premiseLookupState]![premiseLookupDistrict]!.map((String type) {
-                      return DropdownMenuItem(
-                        value: type,
-                        child: Text(type),
-                      );
-                    }).toList()
-                  ],
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      premiseLookupPremiseType = newValue!;
-                    });
-                  },
-                ),
-              ),
               MaterialButton(
                 minWidth: MediaQuery.of(context).size.width - 70,
                 height: 45,
@@ -340,9 +401,6 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
                   }
                   itemLookupGroup = "";
                   itemLookupCategory = "";
-                  premiseLookupState = "";
-                  premiseLookupDistrict = "";
-                  premiseLookupPremiseType = "";
                   _filterItems();
                 },
               )
@@ -371,7 +429,7 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
             onTap: () {
-              _getPriceList(items[index]["item_code"]);
+              _showLocationFilter(context, items[index]["item_code"]);
             }
           );
         }
