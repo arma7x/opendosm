@@ -126,6 +126,24 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
     scaffoldKey.currentState!.closeEndDrawer();
   }
 
+  _getPriceList(int item_code) {
+    var select_stmt = "SELECT prices.date as last_update, prices.price, premises.* FROM items";
+    var join_stmt = ["LEFT JOIN prices ON prices.item_code = items.item_code", "LEFT JOIN premises ON premises.premise_code = prices.premise_code"];
+    var where_stmt = ["WHERE NOT items.item='UNKNOWN'", " prices.price IS NOT NULL", " premises.premise_code IS NOT NULL", " items.item_code=${item_code}"];
+    if (premiseLookupState != "") {
+      where_stmt.add(" premises.state='${premiseLookupState}'");
+    }
+    if (premiseLookupDistrict != "") {
+      where_stmt.add(" premises.district='${premiseLookupDistrict}'");
+    }
+    if (premiseLookupPremiseType != "") {
+      where_stmt.add(" premises.premise_type='${premiseLookupPremiseType}'");
+    }
+    var order_stmt = "ORDER BY prices.price ASC";
+    var _priceList = dBInstance!.select([select_stmt, join_stmt.join(" "), where_stmt.join(" AND"), order_stmt].join(' '));
+    print(_priceList.cast<Map<String, dynamic>>().length);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -346,9 +364,15 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
             leading: const Icon(Icons.list),
             trailing: Text(
               items[index]["unit"]!.toString(),
-              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue, fontSize: 15),
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue, fontSize: 13),
             ),
-            title: Text(items[index]["item"]!.toString()),
+            title: Text(
+              items[index]["item"]!.toString(),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            ),
+            onTap: () {
+              _getPriceList(items[index]["item_code"]);
+            }
           );
         }
       ) : Center(
