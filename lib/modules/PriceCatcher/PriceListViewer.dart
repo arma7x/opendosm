@@ -25,7 +25,7 @@ class _PriceListViewerState extends State<PriceListViewer> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Text(
-              "Data not available",
+              "Data tidak tersedia!",
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
           ],

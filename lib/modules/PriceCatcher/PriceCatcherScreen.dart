@@ -137,6 +137,21 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
           );
         }),
       );
+    } else {
+      showDialog(
+        barrierDismissible: true,
+        context: context,
+        builder: (BuildContext _) {
+          return AlertDialog(
+            content: Container(
+              child: Text(
+                "Data tidak tersedia!",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              )
+            ),
+          );
+        },
+      );
     }
   }
 
@@ -438,7 +453,7 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Text(
-              "Data not available",
+              "Data tidak tersedia!",
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
           ],
