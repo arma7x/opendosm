@@ -58,33 +58,17 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
       _loadingDialog(true);
       dBInstance = await Api.GetDatabaseWeb();
       List<String> tempItemGroups = [];
-      var _itemGroups = dBInstance!.select('''
-        SELECT item_group FROM items
-        WHERE NOT item_group='UNKNOWN'
-        GROUP BY item_group;
-        '''
-      );
+      var _itemGroups = dBInstance!.select("SELECT item_group FROM items WHERE NOT item_group='UNKNOWN' GROUP BY item_group;");
       for (var x in _itemGroups.rows) {
         tempItemGroups.add(x[0]!.toString());
       }
       List<String> tempItemCategories = [];
-      var _itemCategories = dBInstance!.select('''
-        SELECT item_category FROM items
-        WHERE NOT item_category='UNKNOWN'
-        GROUP BY item_category
-        '''
-      );
+      var _itemCategories = dBInstance!.select("SELECT item_category FROM items WHERE NOT item_category='UNKNOWN' GROUP BY item_category;");
       for (var x in _itemCategories.rows) {
         tempItemCategories.add(x[0]!.toString());
       }
       Map<String, Map<String, List<String>>> tempStates = {};
-      var _states = dBInstance!.select('''
-        SELECT state, district, premise_type FROM premises
-        WHERE NOT state='UNKNOWN'
-        GROUP BY state, district, premise_type
-        ORDER BY state ASC, district ASC, premise_type ASC
-        '''
-      );
+      var _states = dBInstance!.select("SELECT state, district, premise_type FROM premises WHERE NOT state='UNKNOWN' GROUP BY state, district, premise_type ORDER BY state ASC, district ASC, premise_type ASC;");
       for (var x in _states.rows) {
         final state = x[0]!.toString().trim();
         final district = x[1]!.toString().trim();
