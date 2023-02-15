@@ -11,6 +11,7 @@ import 'package:idb_shim/idb_browser.dart';
 import 'dart:typed_data';
 import 'package:sqlite3/common.dart';
 import 'package:sqlite3/sqlite3.dart';
+import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as path;
 import 'package:permission_handler/permission_handler.dart';
@@ -35,33 +36,29 @@ class Api extends BaseApi {
       }
 
       Directory documentsDirectory = await getApplicationDocumentsDirectory();
-      File dbFile = File(path.join(documentsDirectory.path, "pricecatcher.db"));
+      File dbFile = await File(path.join(documentsDirectory.path, "pricecatcher.db")).create(recursive: true);
 
       if (dbFile.existsSync() == false && latestContentLength == -1) {
         throw('Error HEAD: ${DB_SRC}');
       }
 
       int currentContentLength = prefs.getInt('contentLength') ?? 0;
-
-      Uint8List zipUint8List = Uint8List(0);
       if (dbFile.existsSync() == false || (latestContentLength != -1 && latestContentLength != currentContentLength)) {
         final response = await http.get(Uri.parse(DB_SRC));
         if (response.statusCode == 200) {
           await prefs.setInt('contentLength', int.parse(response.headers["content-length"]!));
-          zipUint8List = response.bodyBytes as Uint8List;
+          final archive = ZipDecoder().decodeBytes(response.bodyBytes as Uint8List);
+          for (final file in archive) {
+            if (file.isFile) {
+              if (dbFile.existsSync()) {
+                dbFile.delete();
+              }
+              dbFile.writeAsBytesSync(file.content);
+              break;
+            }
+          }
         } else {
           throw('Error GET: ${DB_SRC}');
-        }
-      }
-
-      final archive = ZipDecoder().decodeBytes(zipUint8List);
-      for (final file in archive) {
-        if (file.isFile) {
-          if (dbFile.existsSync()) {
-            dbFile.delete();
-          }
-          dbFile.writeAsBytesSync(file.content);
-          break;
         }
       }
       final instance = await sqlite3.open(dbFile.path);

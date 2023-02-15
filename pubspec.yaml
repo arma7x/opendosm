@@ -46,6 +46,7 @@ dependencies:
   permission_handler: ^10.2.0
   shared_preferences: ^0.5.5
   path: ^1.8.2
+  sqlite3_flutter_libs: ^0.5.12
 
 dev_dependencies:
   flutter_test:
