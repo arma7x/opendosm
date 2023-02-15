@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:sqlite3/common.dart';
+import 'package:flutter/foundation.dart';
 import './api.dart';
 import './PriceListViewer.dart';
-import 'package:sqlite3/common.dart';
 
 class PriceCatcherScreen extends StatefulWidget {
   const PriceCatcherScreen({
@@ -17,8 +18,6 @@ class PriceCatcherScreen extends StatefulWidget {
 }
 
 class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
-
-  Api api = new Api();
 
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
   final ScrollController _scrollController = ScrollController();
@@ -56,7 +55,11 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
   _fetchData() async {
     try {
       _loadingDialog(true);
-      dBInstance = await Api.GetDatabaseWeb();
+      if (defaultTargetPlatform == TargetPlatform.android){
+        dBInstance = await Api.GetDatabaseAndroid();
+      } else {
+        dBInstance = await Api.GetDatabaseWeb();
+      }
       List<String> tempItemGroups = [];
       var _itemGroups = dBInstance!.select("SELECT item_group FROM items WHERE NOT item_group='UNKNOWN' GROUP BY item_group;");
       for (var x in _itemGroups.rows) {
