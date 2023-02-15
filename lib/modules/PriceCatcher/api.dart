@@ -24,8 +24,8 @@ class Api {
         throw('Error HEAD: ${srcURI}');
       }
       IdbFactory idbFactory = getIdbFactory()!;
-      final storeName = 'opendosm';
-      final db = await idbFactory.open('price_catcher', version: 1,
+      final storeName = 'price_catcher';
+      final db = await idbFactory.open('opendosm', version: 1,
           onUpgradeNeeded: (VersionChangeEvent event) {
           final db = event.database;
           db.createObjectStore(storeName, autoIncrement: true);
