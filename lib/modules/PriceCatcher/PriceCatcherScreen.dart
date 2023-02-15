@@ -153,9 +153,9 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
                   SizedBox(height: 10),
                   Center(
                     child: Text(
-                      "Pilih Lokasi",
+                      "Pilih Lokasi bagi ${name}",
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                     ),
                   ),
                   ListTile(
@@ -235,10 +235,10 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
                   ),
                   MaterialButton(
                     minWidth: MediaQuery.of(context).size.width,
-                    height: 45,
+                    height: 40,
                     color: Theme.of(context).colorScheme.primary,
                     child: new Text(
-                      "CARIAN",
+                      "PAPAR HARGA",
                       style: new TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16.0,
@@ -251,13 +251,13 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
                       _getPriceList(context, item_code, name);
                     },
                   ),
-                  SizedBox(height: 5),
+                  SizedBox(height: 8),
                   MaterialButton(
                     minWidth: MediaQuery.of(context).size.width,
-                    height: 45,
+                    height: 40,
                     color: Colors.red,
                     child: new Text(
-                      "RALAT",
+                      "RALAT LOKASI",
                       style: new TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16.0,
@@ -365,10 +365,10 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
               ),
               MaterialButton(
                 minWidth: MediaQuery.of(context).size.width - 70,
-                height: 45,
+                height: 40,
                 color: Theme.of(context).colorScheme.primary,
                 child: new Text(
-                  "TAPIS CARIAN",
+                  "TAPIS BARANGAN",
                   style: new TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16.0,
@@ -382,12 +382,13 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
                   _filterItems();
                 },
               ),
+              SizedBox(height: 8),
               MaterialButton(
                 minWidth: MediaQuery.of(context).size.width - 70,
-                height: 45,
+                height: 40,
                 color: Colors.red,
                 child: new Text(
-                  "RALAT CARIAN",
+                  "RALAT TAPISAN",
                   style: new TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16.0,
@@ -418,11 +419,11 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
         itemCount: items.length,
         itemBuilder: (BuildContext _, int index) {
           return ListTile(
-            leading: const Icon(Icons.search),
-            trailing: Text(
+            leading: Text(
               items[index]["unit"]!.toString(),
               style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue, fontSize: 13),
             ),
+            trailing: const Icon(Icons.search),
             title: Text(
               items[index]["item"]!.toString(),
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),

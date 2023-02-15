@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.arma7x.opendosm_pricecatcher">
    <application
-        android:label="opendosm_pricecatcher"
+        android:label="PriceCatcher-OpenDOSM(Unofficial)"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

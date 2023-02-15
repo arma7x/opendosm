@@ -40,13 +40,35 @@ class _PriceListViewerState extends State<PriceListViewer> {
                 title: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text("RM" + double.parse(widget.priceList[index]["price"]!.toString()).toStringAsFixed(2)),
-                    Text(widget.priceList[index]["last_update"]!.toString()),
-                    Text(widget.priceList[index]["premise"]!.toString()),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          "RM" + double.parse(widget.priceList[index]["price"]!.toString()).toStringAsFixed(2),
+                          style: new TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue
+                          )
+                        ),
+                        Text(
+                          widget.priceList[index]["last_update"]!.toString(),
+                          style: new TextStyle(
+                            fontWeight: FontWeight.bold,
+                          )
+                        ),
+                      ]
+                    ),
+                    SizedBox(height: 8),
+                    Text(widget.priceList[index]["premise"]!.toString() + "(" + widget.priceList[index]["premise_type"]!.toString() + ")"),
+                    SizedBox(height: 5),
                     Text(widget.priceList[index]["address"]!.toString()),
-                    Text(widget.priceList[index]["premise_type"]!.toString()),
-                    Text(widget.priceList[index]["state"]!.toString()),
-                    Text(widget.priceList[index]["district"]!.toString())
+                    SizedBox(height: 8),
+                    Text(
+                      widget.priceList[index]["district"]!.toString() + ", " +  widget.priceList[index]["state"]!.toString(),
+                      style: new TextStyle(
+                        fontSize: 14.0,
+                      )
+                    )
                   ]
                 ),
               )
