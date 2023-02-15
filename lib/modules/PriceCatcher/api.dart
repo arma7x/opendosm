@@ -13,6 +13,7 @@ import 'package:sqlite3/common.dart';
 import 'package:sqlite3/wasm.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as path;
+import 'package:permission_handler/permission_handler.dart';
 
 const String DB_SRC = "https://raw.githubusercontent.com/arma7x/opendosm-parquet-to-sqlite/master/pricecatcher.zip";
 
@@ -83,6 +84,9 @@ class Api {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     int latestContentLength = 0;
     try {
+      while (await Permission.storage.request().isDenied) {
+        await Permission.storage.request();
+      }
       final responseHeader = await http.head(Uri.parse(DB_SRC));
       if (responseHeader.statusCode == 200) {
         latestContentLength = int.parse(responseHeader.headers["content-length"]!);
