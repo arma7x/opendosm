@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:sqlite3/common.dart';
-import 'package:flutter/foundation.dart';
-import './api.dart';
+import './api.dart'
+  if (dart.library.io) './api_android.dart'
+  if (dart.library.html) './api_web.dart';
 import './PriceListViewer.dart';
 
 class PriceCatcherScreen extends StatefulWidget {
@@ -55,11 +56,7 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
   _fetchData() async {
     try {
       _loadingDialog(true);
-      if (defaultTargetPlatform == TargetPlatform.android){
-        dBInstance = await Api.GetDatabaseAndroid();
-      } else {
-        dBInstance = await Api.GetDatabaseWeb();
-      }
+      dBInstance = await (Api()).GetDatabase();
       List<String> tempItemGroups = [];
       var _itemGroups = dBInstance!.select("SELECT item_group FROM items WHERE NOT item_group='UNKNOWN' GROUP BY item_group;");
       for (var x in _itemGroups.rows) {
