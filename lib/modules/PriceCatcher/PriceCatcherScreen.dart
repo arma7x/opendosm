@@ -89,7 +89,6 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
       _loadingDialog(false);
       _filterItems();
     } catch (err) {
-      print(err);
       _loadingDialog(false);
     }
   }
