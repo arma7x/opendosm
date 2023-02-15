@@ -11,17 +11,18 @@ import 'dart:typed_data';
 import 'package:sqlite3/common.dart';
 import 'package:sqlite3/wasm.dart';
 
+const String SOURCE = "https://raw.githubusercontent.com/arma7x/opendosm-parquet-to-sqlite/master/pricecatcher.zip";
+
 class Api {
 
   static Future<CommonDatabase> GetDatabaseWeb() async {
     int latestContentLength = 0;
-    Uri srcURI = Uri.parse("https://raw.githubusercontent.com/arma7x/opendosm-parquet-to-sqlite/master/pricecatcher.zip");
     try {
-      final responseHeader = await http.head(srcURI);
+      final responseHeader = await http.head(Uri.parse(SOURCE));
       if (responseHeader.statusCode == 200) {
         latestContentLength = int.parse(responseHeader.headers["content-length"]!);
       } else {
-        throw('Error HEAD: ${srcURI}');
+        latestContentLength = -1;
       }
       IdbFactory idbFactory = getIdbFactory()!;
       final storeName = 'price_catcher';
@@ -37,8 +38,12 @@ class Api {
       int currentContentLength = await store.getObject("contentLength") as int ?? 0;
       await txn.completed;
 
-      if (zipUint8Array == null || latestContentLength != currentContentLength) {
-        final response = await http.get(srcURI);
+      if (zipUint8Array == null && latestContentLength == -1) {
+        throw('Error HEAD: ${SOURCE}');
+      }
+
+      if (zipUint8Array == null || (latestContentLength != -1 && latestContentLength != currentContentLength)) {
+        final response = await http.get(Uri.parse(SOURCE));
         if (response.statusCode == 200) {
           // String dir = (await getTemporaryDirectory()).path;
           txn = db.transaction(storeName, "readwrite");
@@ -48,7 +53,7 @@ class Api {
           await txn.completed;
           zipUint8Array = response.bodyBytes;
         } else {
-          throw('Error GET: ${srcURI}');
+          throw('Error GET: ${SOURCE}');
         }
       }
       Uint8List dbUint8List = Uint8List(0);
@@ -72,4 +77,7 @@ class Api {
     }
   }
 
+  //static Future<CommonDatabase> GetDatabaseAndroid() async {
+
+  //}
 }
