@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import './api.dart';
+import './PriceListViewer.dart';
 import 'package:sqlite3/common.dart';
 
 class PriceCatcherScreen extends StatefulWidget {
@@ -126,7 +127,7 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
     scaffoldKey.currentState!.closeEndDrawer();
   }
 
-  _getPriceList(int item_code) {
+  _getPriceList(BuildContext context, int item_code, String name) {
     var select_stmt = "SELECT prices.date as last_update, prices.price, premises.* FROM items";
     var join_stmt = ["LEFT JOIN prices ON prices.item_code = items.item_code", "LEFT JOIN premises ON premises.premise_code = prices.premise_code"];
     var where_stmt = ["WHERE NOT items.item='UNKNOWN'", " prices.price IS NOT NULL", " premises.premise_code IS NOT NULL", " items.item_code=${item_code}"];
@@ -141,20 +142,31 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
     }
     var order_stmt = "ORDER BY prices.price ASC";
     var _priceList = dBInstance!.select([select_stmt, join_stmt.join(" "), where_stmt.join(" AND"), order_stmt].join(' '));
-    print(_priceList.cast<Map<String, dynamic>>().length);
+    List<Map<String, dynamic>> list = _priceList.cast<Map<String, dynamic>>();
+    if (list.length > 0) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) {
+          return PriceListViewer(
+            title: name,
+            priceList: list,
+          );
+        }),
+      );
+    }
   }
 
-  _showLocationFilter(BuildContext ctx, int item_code) {
+  _showLocationFilter(BuildContext context, int item_code, String name) {
     showModalBottomSheet<void>(
       context: context,
-      builder: (context) {
+      builder: (_) {
         return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
+          builder: (BuildContext _, StateSetter setState) {
             return Container(
               padding: EdgeInsets.all(5.0),
               child: Wrap(
                 children: <Widget>[
-                  SizedBox(height: 4),
+                  SizedBox(height: 10),
                   Center(
                     child: Text(
                       "Pilih Lokasi",
@@ -249,11 +261,13 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
                         color: Colors.white
                       )
                     ),
-                    onPressed: () {
-                      _getPriceList(item_code);
-                      Navigator.of(context).pop();
+                    onPressed: () async {
+                      // Navigator.of(context).pop();
+                      // await Future.delayed(Duration(milliseconds: 500));
+                      _getPriceList(context, item_code, name);
                     },
                   ),
+                  SizedBox(height: 5),
                   MaterialButton(
                     minWidth: MediaQuery.of(context).size.width,
                     height: 45,
@@ -430,7 +444,7 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
             onTap: () {
-              _showLocationFilter(context, items[index]["item_code"]);
+              _showLocationFilter(context, items[index]["item_code"], items[index]["item"].toString());
             }
           );
         }
