@@ -104,6 +104,31 @@ class _MyHomePageState extends State<MyHomePage> {
               )
             )
           ),
+          Card(
+            color: Colors.grey[200],
+            child: Container(
+              child: ListTile(
+                leading: Icon(
+                  Icons.store,
+                  size: 28.0,
+                ),
+                trailing: const Icon(Icons.arrow_forward_ios ),
+                title: Text(
+                  "Premis(Senarai Harga)",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                ),
+                onTap: () async {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) {
+                      // TODO Premises(title: "PriceCatcher", dBInstance: dBInstance);
+                      return PriceCatcherScreen(title: "PriceCatcher", dBInstance: dBInstance);
+                    }),
+                  );
+                }
+              )
+            )
+          ),
         ],
       ),
     );
