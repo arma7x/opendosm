@@ -146,7 +146,7 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
                   SizedBox(height: 10),
                   Center(
                     child: Text(
-                      "Pilih lokasi premis bagi ${name}",
+                      "Pilih lokasi premis bagi:\n${name}",
                       textAlign: TextAlign.center,
                       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                     ),
