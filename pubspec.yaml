@@ -38,7 +38,6 @@ dependencies:
   http: ^0.13.5
   html: ^0.15.1
   csv: ^5.0.1
-  flutter_slidable: ^2.0.0
   archive: ^3.3.6
   sqlite3: ^1.9.1
   idb_shim: ^2.3.0+1
