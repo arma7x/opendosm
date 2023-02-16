@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:opendosm_pricecatcher/widgets/widgets.dart' show PremiseWidget;
 import './PriceCatcherScreen.dart';
 import './api.dart';
 
@@ -52,23 +53,18 @@ class _PriceListViewerState extends State<PriceListViewer> {
                         ),
                         Text(
                           widget.priceList[index]["last_update"]!.toString(),
-                          style: new TextStyle(
-                            fontWeight: FontWeight.bold,
-                          )
+                          style: new TextStyle(fontWeight: FontWeight.bold)
                         ),
                       ]
                     ),
                     SizedBox(height: 8),
-                    Text(widget.priceList[index]["premise"]!.toString() + "(" + widget.priceList[index]["premise_type"]!.toString() + ")"),
-                    SizedBox(height: 5),
-                    Text(widget.priceList[index]["address"]!.toString()),
-                    SizedBox(height: 8),
-                    Text(
-                      widget.priceList[index]["district"]!.toString() + ", " +  widget.priceList[index]["state"]!.toString(),
-                      style: new TextStyle(
-                        fontSize: 14.0,
-                      )
-                    )
+                    PremiseWidget(
+                      premise: widget.priceList[index]["premise"]!.toString(),
+                      premise_type: widget.priceList[index]["premise_type"]!.toString(),
+                      address: widget.priceList[index]["address"]!.toString(),
+                      district: widget.priceList[index]["district"]!.toString(),
+                      state: widget.priceList[index]["state"]!.toString(),
+                    ),
                   ]
                 ),
               )
