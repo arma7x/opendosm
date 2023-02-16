@@ -22,19 +22,12 @@ class PremiseWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Row(
-          children: <Widget>[
-            Text(premise),
-            Text("(", style: new TextStyle(fontWeight: FontWeight.bold)),
-            Text(premise_type, style: new TextStyle(fontWeight: FontWeight.bold)),
-            Text(")", style: new TextStyle(fontWeight: FontWeight.bold)),
-          ]
-        ),
+        Text(premise),
         SizedBox(height: 5),
         Text(address),
         SizedBox(height: 8),
         Text(
-          district + ", " +  state,
+          premise_type + ", " + district + ", " +  state,
           style: new TextStyle(
             fontSize: 14.0,
           )
