@@ -38,17 +38,17 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
   _fetchData() async {
     try {
       List<String> tempItemGroups = [];
-      var _itemGroups = widget.dBInstance!.select("SELECT item_group FROM items WHERE NOT item_group='UNKNOWN' GROUP BY item_group;");
+      var _itemGroups = widget.dBInstance!.select("SELECT item_group FROM items WHERE NOT item_code=-1 GROUP BY item_group;");
       for (var x in _itemGroups.rows) {
         tempItemGroups.add(x[0]!.toString());
       }
       List<String> tempItemCategories = [];
-      var _itemCategories = widget.dBInstance!.select("SELECT item_category FROM items WHERE NOT item_category='UNKNOWN' GROUP BY item_category;");
+      var _itemCategories = widget.dBInstance!.select("SELECT item_category FROM items WHERE NOT item_code=-1 GROUP BY item_category;");
       for (var x in _itemCategories.rows) {
         tempItemCategories.add(x[0]!.toString());
       }
       Map<String, Map<String, List<String>>> tempStates = {};
-      var _states = widget.dBInstance!.select("SELECT state, district, premise_type FROM premises WHERE NOT state='UNKNOWN' GROUP BY state, district, premise_type ORDER BY state ASC, district ASC, premise_type ASC;");
+      var _states = widget.dBInstance!.select("SELECT state, district, premise_type FROM premises WHERE NOT premise_code=-1 GROUP BY state, district, premise_type ORDER BY state ASC, district ASC, premise_type ASC;");
       for (var x in _states.rows) {
         final state = x[0]!.toString().trim();
         final district = x[1]!.toString().trim();
@@ -93,7 +93,7 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
   _getPriceList(BuildContext context, int item_code, String name) {
     var select_stmt = "SELECT prices.date as last_update, prices.price, premises.* FROM items";
     var join_stmt = ["LEFT JOIN prices ON prices.item_code = items.item_code", "LEFT JOIN premises ON premises.premise_code = prices.premise_code"];
-    var where_stmt = ["WHERE NOT items.item='UNKNOWN'", " prices.price IS NOT NULL", " premises.premise_code IS NOT NULL", " items.item_code=${item_code}"];
+    var where_stmt = ["WHERE NOT items.item_code=-1", " prices.price IS NOT NULL", " premises.premise_code IS NOT NULL", " items.item_code=${item_code}"];
     if (premiseLookupState != "") {
       where_stmt.add(" premises.state='${premiseLookupState}'");
     }
