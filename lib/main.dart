@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:opendosm_pricecatcher/modules/screens.dart';
+import 'package:sqlite3/common.dart';
+import './api/api.dart'
+  if (dart.library.io) './api/api_android.dart'
+  if (dart.library.html) './api/api_web.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,6 +35,43 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
+  CommonDatabase? dBInstance;
+
+  void _loadingDialog(bool show) {
+    if (show == true) {
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext _) {
+          return AlertDialog(
+            content: Container(child: new LinearProgressIndicator()),
+          );
+        },
+      );
+    } else {
+      Navigator.of(context).pop();
+    }
+  }
+
+  _initilize() async {
+    try {
+      _loadingDialog(true);
+      dBInstance = await (Api()).GetDatabase();
+      _loadingDialog(false);
+    } catch (err) {
+      print(err);
+      _loadingDialog(false);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initilize();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,11 +93,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   "PriceCatcher",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
-                onTap: () {
+                onTap: () async {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) {
-                      return PriceCatcherScreen(title: "PriceCatcher");
+                      return PriceCatcherScreen(title: "PriceCatcher", dBInstance: dBInstance);
                     }),
                   );
                 }

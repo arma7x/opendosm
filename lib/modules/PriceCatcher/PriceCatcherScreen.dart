@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:sqlite3/common.dart';
-import './api.dart'
-  if (dart.library.io) './api_android.dart'
-  if (dart.library.html) './api_web.dart';
 import './PriceListViewer.dart';
 
 class PriceCatcherScreen extends StatefulWidget {
   const PriceCatcherScreen({
     super.key,
     required this.title,
+    this.dBInstance
   });
 
   final String title;
+
+  final CommonDatabase? dBInstance;
 
   @override
   State<PriceCatcherScreen> createState() => _PriceCatcherScreenState();
@@ -35,40 +35,20 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
   String premiseLookupDistrict = "";
   String premiseLookupPremiseType = "";
 
-  CommonDatabase? dBInstance;
-
-  void _loadingDialog(bool show) {
-    if (show == true) {
-      showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (BuildContext _) {
-          return AlertDialog(
-            content: Container(child: new LinearProgressIndicator()),
-          );
-        },
-      );
-    } else {
-      Navigator.of(context).pop();
-    }
-  }
-
   _fetchData() async {
     try {
-      _loadingDialog(true);
-      dBInstance = await (Api()).GetDatabase();
       List<String> tempItemGroups = [];
-      var _itemGroups = dBInstance!.select("SELECT item_group FROM items WHERE NOT item_group='UNKNOWN' GROUP BY item_group;");
+      var _itemGroups = widget.dBInstance!.select("SELECT item_group FROM items WHERE NOT item_group='UNKNOWN' GROUP BY item_group;");
       for (var x in _itemGroups.rows) {
         tempItemGroups.add(x[0]!.toString());
       }
       List<String> tempItemCategories = [];
-      var _itemCategories = dBInstance!.select("SELECT item_category FROM items WHERE NOT item_category='UNKNOWN' GROUP BY item_category;");
+      var _itemCategories = widget.dBInstance!.select("SELECT item_category FROM items WHERE NOT item_category='UNKNOWN' GROUP BY item_category;");
       for (var x in _itemCategories.rows) {
         tempItemCategories.add(x[0]!.toString());
       }
       Map<String, Map<String, List<String>>> tempStates = {};
-      var _states = dBInstance!.select("SELECT state, district, premise_type FROM premises WHERE NOT state='UNKNOWN' GROUP BY state, district, premise_type ORDER BY state ASC, district ASC, premise_type ASC;");
+      var _states = widget.dBInstance!.select("SELECT state, district, premise_type FROM premises WHERE NOT state='UNKNOWN' GROUP BY state, district, premise_type ORDER BY state ASC, district ASC, premise_type ASC;");
       for (var x in _states.rows) {
         final state = x[0]!.toString().trim();
         final district = x[1]!.toString().trim();
@@ -86,15 +66,14 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
         itemCategories = tempItemCategories;
         states = tempStates;
       });
-      _loadingDialog(false);
       _filterItems();
     } catch (err) {
-      _loadingDialog(false);
+      print(err);
     }
   }
 
   _filterItems() {
-    if (dBInstance != null) {
+    if (widget.dBInstance != null) {
       var select_stmt = "SELECT * FROM items";
       var where_stmt = ["WHERE NOT item_code=-1"];
       if (itemLookupGroup != "") {
@@ -103,7 +82,7 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
       if (itemLookupCategory != "") {
         where_stmt.add(" item_category='${itemLookupCategory}'");
       }
-      var _items = dBInstance!.select([select_stmt, where_stmt.join(" AND")].join(' '));
+      var _items = widget.dBInstance!.select([select_stmt, where_stmt.join(" AND")].join(' '));
       setState(() {
         items = _items.cast<Map<String, dynamic>>();
       });
@@ -125,7 +104,7 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
       where_stmt.add(" premises.premise_type='${premiseLookupPremiseType}'");
     }
     var order_stmt = "ORDER BY prices.price ASC";
-    var _priceList = dBInstance!.select([select_stmt, join_stmt.join(" "), where_stmt.join(" AND"), order_stmt].join(' '));
+    var _priceList = widget.dBInstance!.select([select_stmt, join_stmt.join(" "), where_stmt.join(" AND"), order_stmt].join(' '));
     List<Map<String, dynamic>> list = _priceList.cast<Map<String, dynamic>>();
     if (list.length > 0) {
       Navigator.push(
