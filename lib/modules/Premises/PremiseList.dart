@@ -234,36 +234,42 @@ class _PremiseListState extends State<PremiseList> {
           ),
         )
       ),
-      body: premises.length > 0 ? ListView.separated(
+      body: premises.length > 0 ? ListView.builder(
         controller: _scrollController,
-        separatorBuilder: (context, index) {
-          return Divider(
-            thickness: 1.0,
-            color: Colors.grey,
-          );
-        },
         itemCount: premises.length,
         itemBuilder: (BuildContext _, int index) {
-          return ListTile(
-            title: PremiseWidget(
-              premise: premises[index]["premise"]!.toString(),
-              premise_type: premises[index]["premise_type"]!.toString(),
-              address: premises[index]["address"]!.toString(),
-              district: premises[index]["district"]!.toString(),
-              state: premises[index]["state"]!.toString(),
-            ),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) {
-                  return PriceList(
-                    title: premises[index]["premise"]!.toString(),
-                    premise_code: premises[index]["premise_code"]!,
-                    dBInstance: widget.dBInstance
+          return Card(
+            color: Colors.grey[200],
+            child: Container(
+              child: ListTile(
+                title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                    SizedBox(height: 10),
+                    PremiseWidget(
+                      premise: premises[index]["premise"]!.toString(),
+                      premise_type: premises[index]["premise_type"]!.toString(),
+                      address: premises[index]["address"]!.toString(),
+                      district: premises[index]["district"]!.toString(),
+                      state: premises[index]["state"]!.toString(),
+                    ),
+                    SizedBox(height: 10),
+                  ]
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) {
+                      return PriceList(
+                        title: premises[index]["premise"]!.toString(),
+                        premise_code: premises[index]["premise_code"]!,
+                        dBInstance: widget.dBInstance
+                      );
+                    }),
                   );
-                }),
-              );
-            }
+                }
+              )
+            )
           );
         }
       ) : Center(

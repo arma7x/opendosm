@@ -35,36 +35,35 @@ class _PriceListViewerState extends State<PriceListViewer> {
           return Card(
             color: Colors.grey[200],
             child: Container(
-              child: ListTile(
-                title: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text(
-                          "RM" + double.parse(widget.priceList[index]["price"]!.toString()).toStringAsFixed(2),
-                          style: new TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blue
-                          )
-                        ),
-                        Text(
-                          widget.priceList[index]["last_update"]!.toString(),
-                          style: new TextStyle(fontWeight: FontWeight.bold)
-                        ),
-                      ]
-                    ),
-                    SizedBox(height: 8),
-                    PremiseWidget(
-                      premise: widget.priceList[index]["premise"]!.toString(),
-                      premise_type: widget.priceList[index]["premise_type"]!.toString(),
-                      address: widget.priceList[index]["address"]!.toString(),
-                      district: widget.priceList[index]["district"]!.toString(),
-                      state: widget.priceList[index]["state"]!.toString(),
-                    ),
-                  ]
-                ),
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(
+                        "RM" + double.parse(widget.priceList[index]["price"]!.toString()).toStringAsFixed(2),
+                        style: new TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue
+                        )
+                      ),
+                      Text(
+                        widget.priceList[index]["last_update"]!.toString(),
+                        style: new TextStyle(fontWeight: FontWeight.bold)
+                      ),
+                    ]
+                  ),
+                  SizedBox(height: 8),
+                  PremiseWidget(
+                    premise: widget.priceList[index]["premise"]!.toString(),
+                    premise_type: widget.priceList[index]["premise_type"]!.toString(),
+                    address: widget.priceList[index]["address"]!.toString(),
+                    district: widget.priceList[index]["district"]!.toString(),
+                    state: widget.priceList[index]["state"]!.toString(),
+                  ),
+                ]
               )
             )
           );

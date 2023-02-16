@@ -401,29 +401,28 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
           ),
         )
       ),
-      body: items.length > 0 ? ListView.separated(
+      body: items.length > 0 ? ListView.builder(
         controller: _scrollController,
-        separatorBuilder: (context, index) {
-          return Divider(
-            thickness: 1.0,
-            color: Colors.grey,
-          );
-        },
         itemCount: items.length,
         itemBuilder: (BuildContext _, int index) {
-          return ListTile(
-            leading: Text(
-              items[index]["unit"]!.toString(),
-              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue, fontSize: 13),
-            ),
-            trailing: const Icon(Icons.search),
-            title: Text(
-              items[index]["item"]!.toString(),
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-            ),
-            onTap: () {
-              _showLocationFilter(context, items[index]["item_code"], items[index]["item"].toString());
-            }
+          return Card(
+            color: Colors.grey[200],
+            child: Container(
+              child: ListTile(
+                leading: Text(
+                  items[index]["unit"]!.toString(),
+                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue, fontSize: 13),
+                ),
+                trailing: const Icon(Icons.search),
+                title: Text(
+                  items[index]["item"]!.toString(),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                ),
+                onTap: () {
+                  _showLocationFilter(context, items[index]["item_code"], items[index]["item"].toString());
+                }
+              )
+            )
           );
         }
       ) : Center(

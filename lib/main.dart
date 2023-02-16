@@ -121,7 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) {
-                      return PremiseList(title: "Premise", dBInstance: dBInstance);
+                      return PremiseList(title: "Premis", dBInstance: dBInstance);
                     }),
                   );
                 }
