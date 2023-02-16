@@ -1,5 +1,5 @@
 import 'package:sqlite3/common.dart';
 
-abstract class BaseApi {
+abstract class BaseDatabase {
   Future<CommonDatabase> GetDatabase();
 }

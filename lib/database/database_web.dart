@@ -2,7 +2,7 @@ import 'dart:core';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-import './api.dart';
+import './database.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:archive/archive_io.dart';
@@ -16,7 +16,7 @@ import 'package:path/path.dart' as path;
 
 const String DB_SRC = "https://raw.githubusercontent.com/arma7x/opendosm-parquet-to-sqlite/master/pricecatcher.zip";
 
-class Api extends BaseApi {
+class Database extends BaseDatabase {
 
   @override
   Future<CommonDatabase> GetDatabase() async {

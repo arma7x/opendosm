@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:opendosm_pricecatcher/modules/screens.dart';
 import 'package:sqlite3/common.dart';
-import './api/api.dart'
-  if (dart.library.io) './api/api_android.dart'
-  if (dart.library.html) './api/api_web.dart';
+import './database/database.dart'
+  if (dart.library.io) './database/database_android.dart'
+  if (dart.library.html) './database/database_web.dart';
 
 void main() {
   runApp(const MyApp());
@@ -56,7 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
   _initilize() async {
     try {
       _loadingDialog(true);
-      dBInstance = await (Api()).GetDatabase();
+      dBInstance = await (Database()).GetDatabase();
       _loadingDialog(false);
     } catch (err) {
       print(err);
