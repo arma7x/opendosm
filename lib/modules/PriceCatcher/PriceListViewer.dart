@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:opendosm_pricecatcher/widgets/widgets.dart' show PremiseWidget;
+import 'package:opendosm_pricecatcher/api/api.dart';
 import './PriceCatcherScreen.dart';
-import './api.dart';
 
 class PriceListViewer extends StatefulWidget {
   const PriceListViewer({super.key, required this.title, required this.priceList});
