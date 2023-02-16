@@ -121,8 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) {
-                      // TODO Premises(title: "PriceCatcher", dBInstance: dBInstance);
-                      return PriceCatcherScreen(title: "PriceCatcher", dBInstance: dBInstance);
+                      return PremiseList(title: "Premise", dBInstance: dBInstance);
                     }),
                   );
                 }
