@@ -64,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
             child: ListView(
               children: <Widget>[
                 Text(
-                  "1. INI BUKAN APLIKASI RASMI Department of Statistics Malaysia (DOSM)",
+                  "1. Ini BUKAN APLIKASI RASMI oleh Department of Statistics Malaysia (DOSM)",
                   style: TextStyle(fontWeight: FontWeight.bold)
                 ),
                 SizedBox(height: 5),
