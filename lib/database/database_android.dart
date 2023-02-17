@@ -44,7 +44,6 @@ class Database extends BaseDatabase {
 
       int currentContentLength = prefs.getInt('contentLength') ?? 0;
       if (dbFile.existsSync() == false || (latestContentLength != -1 && latestContentLength != currentContentLength)) {
-        print("RE-DOWNLOAD");
         final response = await http.get(Uri.parse(DB_SRC));
         if (response.statusCode == 200) {
           await prefs.setInt('contentLength', int.parse(response.headers["content-length"]!));

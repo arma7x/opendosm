@@ -30,7 +30,7 @@ class _PremiseListState extends State<PremiseList> {
   String premiseLookupDistrict = "";
   String premiseLookupPremiseType = "";
 
-  _fetchData() async {
+  _initilize() async {
     try {
       Map<String, Map<String, List<String>>> tempStates = {};
       var _states = widget.dBInstance!.select("SELECT state, district, premise_type FROM premises WHERE NOT premise_code=-1 GROUP BY state, district, premise_type ORDER BY state ASC, district ASC, premise_type ASC;");
@@ -81,7 +81,7 @@ class _PremiseListState extends State<PremiseList> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _fetchData();
+      _initilize();
     });
   }
 

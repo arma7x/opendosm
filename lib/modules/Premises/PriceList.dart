@@ -30,7 +30,25 @@ class _PriceListState extends State<PriceList> {
   String itemLookupGroup = "";
   String itemLookupCategory = "";
 
-  _fetchData() async {
+  void _loadingDialog(bool show) {
+    if (show == true) {
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext _) {
+          return AlertDialog(
+            content: Container(child: new LinearProgressIndicator()),
+          );
+        },
+      );
+    } else {
+      Navigator.of(context).pop();
+    }
+  }
+
+  _initilize() async {
+    _loadingDialog(true);
+    await Future.delayed(Duration(milliseconds: 200));
     try {
       List<String> tempItemGroups = [];
       var _itemGroups = widget.dBInstance!.select("SELECT item_group FROM items WHERE NOT item_code=-1 GROUP BY item_group;");
@@ -47,8 +65,10 @@ class _PriceListState extends State<PriceList> {
         itemCategories = tempItemCategories;
       });
       _filterItems();
+      _loadingDialog(false);
     } catch (err) {
       print(err);
+      _loadingDialog(false);
     }
   }
 
@@ -76,7 +96,7 @@ class _PriceListState extends State<PriceList> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _fetchData();
+      _initilize();
     });
   }
 

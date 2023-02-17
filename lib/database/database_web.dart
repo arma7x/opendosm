@@ -47,7 +47,6 @@ class Database extends BaseDatabase {
       }
 
       if (zipUint8Array == null || (latestContentLength != -1 && latestContentLength != currentContentLength)) {
-        print("RE-DOWNLOAD");
         final response = await http.get(Uri.parse(DB_SRC));
         if (response.statusCode == 200) {
           txn = db.transaction(storeName, "readwrite");

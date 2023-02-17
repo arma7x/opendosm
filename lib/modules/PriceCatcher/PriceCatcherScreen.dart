@@ -34,7 +34,7 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
   String premiseLookupDistrict = "";
   String premiseLookupPremiseType = "";
 
-  _fetchData() async {
+  _initilize() async {
     try {
       List<String> tempItemGroups = [];
       var _itemGroups = widget.dBInstance!.select("SELECT item_group FROM items WHERE NOT item_code=-1 GROUP BY item_group;");
@@ -276,7 +276,7 @@ class _PriceCatcherScreenState extends State<PriceCatcherScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _fetchData();
+      _initilize();
     });
   }
 
