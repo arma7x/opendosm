@@ -53,6 +53,38 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  void _showDisclaimerNotice() {
+    showDialog(
+      barrierDismissible: true,
+      context: context,
+      builder: (BuildContext _) {
+        return AlertDialog(
+          content: ListView(
+            children: <Widget>[
+              Text("1. Data harga, premis dan barangan diperoleh dari OpenDOSM dan diproses ke dalam bentuk sqlite(dikemaskini setiap hari)"),
+              SizedBox(height: 5),
+              Text("2. Aplikasi ini mungkin memaparkan data-data yang lama atau yang kurang tepat"),
+              SizedBox(height: 5),
+              Text("3. Pembangun aplikasi tidak bertanggungjawab sekiranya data yang dipaparkan di dalam aplikasi ini kurang tepat"),
+              SizedBox(height: 5),
+              Text("4. Sumber terbuka repositori sqlite:", style: TextStyle(fontWeight: FontWeight.bold)),
+              Text("https://github.com/arma7x/opendosm-parquet-to-sqlite"),
+              SizedBox(height: 5),
+              Text("5. Sumber terbuka repositori aplikasi:", style: TextStyle(fontWeight: FontWeight.bold)),
+              Text("https://github.com/arma7x/opendosm"),
+              SizedBox(height: 5),
+              Text("6. Sumber terbuka repositori OpenDOSM:", style: TextStyle(fontWeight: FontWeight.bold)),
+              Text("https://github.com/dosm-malaysia/aksara-data"),
+              SizedBox(height: 5),
+              Text("License:", style: TextStyle(fontWeight: FontWeight.bold)),
+              Text("This data is made open under the Creative Commons Attribution 4.0 International License (CC BY 4.0). A human-readable copy of the license is available here(https://creativecommons.org/licenses/by/4.0/)"),
+            ]
+          ),
+        );
+      },
+    );
+  }
+
   _initilize() async {
     try {
       _loadingDialog(true);
@@ -125,6 +157,23 @@ class _MyHomePageState extends State<MyHomePage> {
                     }),
                   );
                 }
+              )
+            )
+          ),
+          Card(
+            color: Colors.grey[200],
+            child: Container(
+              child: ListTile(
+                leading: Icon(
+                  Icons.warning,
+                  size: 28.0,
+                ),
+                trailing: const Icon(Icons.arrow_forward_ios ),
+                title: Text(
+                  "Notis Penafian",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                ),
+                onTap: _showDisclaimerNotice
               )
             )
           ),
