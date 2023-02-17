@@ -216,13 +216,18 @@ class _PriceListState extends State<PriceList> {
                     items[index]["item"]!.toString(),
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                   ),
+                  SizedBox(height: 5),
                   Text("Unit: " + items[index]["unit"]!.toString()),
                   Text("Kumpulan: " + items[index]["item_group"]!.toString()),
                   Text("Kategori: " + items[index]["item_category"]!.toString()),
+                  SizedBox(height: 5),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Text("RM" + double.parse(items[index]["price"]!.toString()).toStringAsFixed(2)),
+                      Text(
+                        "RM" + double.parse(items[index]["price"]!.toString()).toStringAsFixed(2),
+                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                      ),
                       Text(items[index]["last_update"]!.toString()),
                     ]
                   )

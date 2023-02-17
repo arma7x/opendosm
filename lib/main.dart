@@ -119,6 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 leading: Icon(
                   Icons.price_change,
                   size: 28.0,
+                  color: Colors.blue,
                 ),
                 trailing: const Icon(Icons.arrow_forward_ios ),
                 title: Text(
@@ -143,6 +144,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 leading: Icon(
                   Icons.store,
                   size: 28.0,
+                  color: Colors.blue,
                 ),
                 trailing: const Icon(Icons.arrow_forward_ios ),
                 title: Text(
@@ -167,6 +169,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 leading: Icon(
                   Icons.warning,
                   size: 28.0,
+                  color: Colors.blue,
                 ),
                 trailing: const Icon(Icons.arrow_forward_ios ),
                 title: Text(
